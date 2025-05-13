@@ -61,7 +61,7 @@
   <h2>SQLite Web Manager</h2>
   <p><strong>DB loaded:</strong> <code>mydata.db</code></p>
 
-  <textarea id="query" placeholder="-- Example: SELECT * FROM users;"></textarea>
+<textarea id="query">SELECT * FROM products;</textarea>
 
   <div class="button-group">
     <button onclick="runQuery()">▶ Run SQL</button>
@@ -83,6 +83,13 @@
 
     function runQuery() {
       const query = document.getElementById('query').value;
+      const lowered = query.toLowerCase();
+
+      if (lowered.includes("delete")) {
+        document.getElementById('output').textContent = "❌ DELETE commands are not allowed.";
+        return;
+      }
+
       try {
         const result = db.exec(query);
         if (result.length === 0) {
@@ -108,3 +115,4 @@
   </script>
 </body>
 </html>
+
