@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>databse tool</title>
+</head>
+<body>
+  <h2>DB MANAGER</h2>
+
+  <textarea id="query" rows="5" cols="80">
+-- Example: SELECT * FROM your_table;
+  </textarea><br>
+
+  <button onclick="runQuery()">▶️ Run SQL</button>
+  <button onclick="downloadDB()">💾 Download Modified DB</button>
+
+  <pre id="output">Loading database...</pre>
+
+  <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+  <script>
+    let db, SQL;
+
+    // Load sql.js
+    initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
+      SQL = SQLLib;
+      const response = await fetch("ecommerce.db");
+      const buffer = await response.arrayBuffer();
+      db = new SQL.Database(new Uint8Array(buffer));
+      document.getElementById('output').textContent = "✅ Database loaded!";
+    });
+
+    function runQuery() {
+      const query = document.getElementById('query').value;
+      try {
+        const result = db.exec(query);
+        if (result.length === 0) {
+          document.getElementById('output').textContent = "✅ Query executed (no results)";
+        } else {
+          document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+        }
+      } catch (e) {
+        document.getElementById('output').textContent = `❌ Error: ${e.message}`;
+      }
+    }
+
+    function downloadDB() {
+      const binaryArray = db.export();
+      const blob = new Blob([binaryArray], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modified.db';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
