@@ -4,8 +4,12 @@ exports.handler = async (event) => {
   try {
     const { imageUrl } = JSON.parse(event.body);
 
+    if (!imageUrl) {
+      return { statusCode: 400, body: "Missing imageUrl" };
+    }
+
     const openaiKey = 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;
-    const prompt = `Look at this product image and respond with a JSON object: { "name": "...", "category": "..." }`;
+    const prompt = `Look at this product image and respond ONLY with a JSON object like this: { "name": "...", "category": "..." }`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -28,24 +32,40 @@ exports.handler = async (event) => {
       })
     });
 
-    if (!response.ok) {
+    const data = await response.json();
+
+    // Log full response for debugging
+    console.log("OpenAI response:", JSON.stringify(data, null, 2));
+
+    // Parse safely
+    if (!data.choices || !data.choices[0]?.message?.content) {
       return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: `OpenAI API error: ${response.statusText}` }),
+        statusCode: 500,
+        body: JSON.stringify({ error: "Invalid response from OpenAI" })
       };
     }
 
-    const data = await response.json();
-    const parsed = JSON.parse(data.choices[0].message.content);
+    let parsed;
+    try {
+      parsed = JSON.parse(data.choices[0].message.content);
+    } catch (err) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Failed to parse AI response", raw: data.choices[0].message.content })
+      };
+    }
 
     return {
       statusCode: 200,
       body: JSON.stringify(parsed)
     };
-  } catch (error) {
+
+  } catch (err) {
+    console.error("Function error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message || "Internal Server Error" })
+      body: JSON.stringify({ error: "Server error", details: err.message })
     };
   }
 };
+
