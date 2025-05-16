@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQLite Web Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f4f9;
+      padding: 20px;
+      color: #333;
+      margin: 0;
+    }
+    h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+    input, textarea {
+      padding: 10px;
+      margin: 5px;
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+    }
+    .button-group {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #2d89ef;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1b5fc1;
+    }
+    #output {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      margin-top: 20px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      min-width: 600px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #e0e0e0;
+    }
+    .danger {
+      background-color: #e74c3c;
+    }
+    .danger:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+  <h2>SQLite Product Manager</h2>
+
+  <p><strong>DB:</strong> <code>ecommerce.db</code></p>
+
+  <div>
+    <input id="pid" placeholder="ID (number)" type="number" />
+    <input id="pname" placeholder="Name" />
+    <input id="pprice" placeholder="Price" type="number" />
+    <input id="purl" placeholder="Picture URL" />
+    <input id="pcategory" placeholder="Category" />
+  </div>
+
+  <div class="button-group">
+    <button onclick="addProduct()">➕ Add</button>
+    <button onclick="updateProduct()">🔄 Update</button>
+    <button onclick="showProducts()">📊 Show Products</button>
+    <button onclick="downloadDB()">💾 Download DB</button>
+  </div>
+
+  <div id="output">Loading database...</div>
+
+  <script>
+    let db, SQL;
+
+    initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
+      SQL = SQLLib;
+      const response = await fetch("ecommerce.db");
+      const buffer = await response.arrayBuffer();
+      db = new SQL.Database(new Uint8Array(buffer));
+      document.getElementById('output').textContent = "✅ Database loaded. Click 'Show Products'.";
+    });
+
+    function showProducts() {
+      const output = document.getElementById('output');
+      const result = db.exec("SELECT * FROM products");
+
+      if (result.length === 0) {
+        output.textContent = "No products.";
+        return;
+      }
+
+      const { columns, values } = result[0];
+      let html = "<table><tr>";
+      columns.forEach(c => html += `<th>${c}</th>`);
+      html += "<th>Action</th></tr>";
+
+      values.forEach(row => {
+        html += "<tr>";
+        row.forEach(cell => html += `<td>${cell}</td>`);
+        html += `<td><button class="danger" onclick="deleteProduct(${row[0]})">❌</button></td>`;
+        html += "</tr>";
+      });
+
+      html += "</table>";
+      output.innerHTML = html;
+    }
+
+    function addProduct() {
+      const id = parseInt(document.getElementById('pid').value);
+      const name = document.getElementById('pname').value.trim();
+      const price = parseFloat(document.getElementById('pprice').value);
+      const url = document.getElementById('purl').value.trim();
+      const category = document.getElementById('pcategory').value.trim();
+
+      if (!id || !name || !price || !url || !category) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      try {
+        db.run(`INSERT INTO products (id, name, price, picture_url, category) VALUES (?, ?, ?, ?, ?)`, [id, name, price, url, category]);
+        alert("✅ Product added!");
+        showProducts();
+      } catch (e) {
+        alert("❌ Error: " + e.message);
+      }
+    }
+
+    function updateProduct() {
+      const id = parseInt(document.getElementById('pid').value);
+      const name = document.getElementById('pname').value.trim();
+      const price = parseFloat(document.getElementById('pprice').value);
+      const url = document.getElementById('purl').value.trim();
+      const category = document.getElementById('pcategory').value.trim();
+
+      if (!id || !name || !price || !url || !category) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      try {
+        db.run(`UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?`, [name, price, url, category, id]);
+        alert("🔄 Product updated!");
+        showProducts();
+      } catch (e) {
+        alert("❌ Error: " + e.message);
+      }
+    }
+
+    function deleteProduct(id) {
+      if (!confirm("Are you sure you want to delete this product?")) return;
+      try {
+        db.run(`DELETE FROM products WHERE id=?`, [id]);
+        alert("🗑️ Product deleted!");
+        showProducts();
+      } catch (e) {
+        alert("❌ Error: " + e.message);
+      }
+    }
+
+    function downloadDB() {
+      const binaryArray = db.export();
+      const blob = new Blob([binaryArray], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modified.db';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
