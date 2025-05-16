@@ -52,7 +52,9 @@
   <button type="button" id="updateBtn" disabled>Update</button>
 </form>
 
-<table id="productTable">
+<button id="loadBtn" style="margin-top: 20px;">Load Products</button>
+
+<table id="productTable" style="display:none;">
   <thead>
     <tr>
       <th>Id</th>
@@ -78,10 +80,17 @@
   const categorySelect = document.getElementById('category');
   const addBtn = document.getElementById('addBtn');
   const updateBtn = document.getElementById('updateBtn');
-  const tableBody = document.querySelector('#productTable tbody');
+  const loadBtn = document.getElementById('loadBtn');
+  const table = document.getElementById('productTable');
+  const tableBody = table.querySelector('tbody');
 
   function renderTable() {
     tableBody.innerHTML = '';
+    if (products.length === 0) {
+      table.style.display = 'none';
+      return;
+    }
+    table.style.display = 'table';
     products.forEach(p => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -162,7 +171,7 @@
     });
 
     resetForm();
-    renderTable();
+    alert('Product added! Click "Load Products" to see the list.');
   };
 
   updateBtn.onclick = () => {
@@ -185,12 +194,16 @@
 
     products[index] = { id, name, price, pictureUrl, category };
     resetForm();
+    alert('Product updated! Click "Load Products" to see the changes.');
+  };
+
+  loadBtn.onclick = () => {
     renderTable();
   };
 
-  renderTable();
 </script>
 
 </body>
 </html>
+
 
