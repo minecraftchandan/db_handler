@@ -15,23 +15,50 @@
       padding: 20px;
       margin: 0;
     }
-    h2 { text-shadow: 0 0 8px white; }
-    input, select, button {
+    h2 {
+      text-shadow: 0 0 8px white;
+    }
+    input, select {
       padding: 10px;
       margin: 5px;
       border-radius: 10px;
-      border: none;
+      border: 1px solid #444;
+      background-color: #111;
+      color: #eee;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 10px;
+      background-color: #000;
+      color: #fff;
+      border: 1px solid #555;
+      cursor: pointer;
+      text-shadow: 0 0 4px white;
+      box-shadow: 0 0 5px #fff2;
+      transition: background 0.2s ease;
+    }
+    button:hover {
+      background-color: #111;
+    }
+    button:active {
+      background-color: #222;
     }
     table {
       margin-top: 20px;
       width: 100%;
       border-collapse: collapse;
+      box-shadow: 0 0 10px white;
     }
     th, td {
       padding: 10px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       color: white;
-      border: 1px solid #ccc;
+      border: 1px solid white;
+      box-shadow: 0 0 6px white;
+    }
+    th {
+      background: rgba(255, 255, 255, 0.1);
     }
     .actions button {
       margin-right: 5px;
@@ -65,7 +92,6 @@
     "Smart Home", "Personal Care", "Kitchen Appliances", "Automotive"
   ];
 
-  // Populate dropdown
   window.onload = () => {
     const dropdown = document.getElementById('pcategory');
     categoryList.sort().forEach(cat => {
@@ -76,7 +102,6 @@
     });
   };
 
-  // Initialize SQL.js and load DB
   initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
     SQL = SQLLib;
     const response = await fetch("ecommerce.db");
@@ -204,6 +229,7 @@
 
 </body>
 </html>
+
 
 
 
