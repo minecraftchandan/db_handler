@@ -3,114 +3,85 @@
 <head>
   <meta charset="UTF-8" />
   <title>SQLite Product Manager</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://sql.js.org/dist/sql-wasm.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Orbitron', sans-serif;
-      background-color: #000;
-      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjBsNmE3NTlnZGxkM3N5Nzh0ZW5kNDkzb2Joazlyd3RoaGZsc21wNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5QRpj3tQyE2gRII7Y4/giphy.gif');
+      background-size: cover;
+      background-attachment: fixed;
+      color: #eee;
       padding: 20px;
+      margin: 0;
     }
-
     h2 {
-      text-align: center;
       text-shadow: 0 0 8px white;
-      margin-bottom: 30px;
     }
-
-    .form-control, .form-select {
+    input, select {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 10px;
+      border: 1px solid #444;
       background-color: #111;
+      color: #eee;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 10px;
+      background-color: #000;
       color: #fff;
       border: 1px solid #555;
+      cursor: pointer;
+      text-shadow: 0 0 4px white;
+      box-shadow: 0 0 5px #fff2;
+      transition: background 0.2s ease;
     }
-
-    .form-control::placeholder {
-      color: #ccc;
+    button:hover {
+      background-color: #111;
     }
-
-    .btn-custom {
-      background-color: #000;
-      border: 1px solid #fff;
-      color: #fff;
-      transition: all 0.3s ease-in-out;
-      box-shadow: 0 0 10px #fff3;
+    button:active {
+      background-color: #222;
     }
-
-    .btn-custom:hover {
-      background-color: #fff;
-      color: #000;
-      box-shadow: 0 0 20px #fff;
-    }
-
     table {
+      margin-top: 20px;
       width: 100%;
-      margin-top: 30px;
       border-collapse: collapse;
-      background-color: transparent;
-      color: #fff;
+      box-shadow: 0 0 10px white;
     }
-
     th, td {
-      padding: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      text-align: center;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid white;
+      box-shadow: 0 0 6px white;
     }
-
     th {
-      background-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.1);
     }
-
     .actions button {
       margin-right: 5px;
-    }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 15px #ffffff22;
-    }
-
-    .transparent-table th,
-    .transparent-table td {
-      background-color: transparent !important;
     }
   </style>
 </head>
 <body>
 
-<div class="container glass">
-  <h2>SQLite Product Manager</h2>
+<h2>SQLite Product Manager</h2>
 
-  <div class="row g-3">
-    <div class="col-md-3">
-      <input id="pname" class="form-control" placeholder="Product Name" />
-    </div>
-    <div class="col-md-2">
-      <input id="pprice" type="number" class="form-control" placeholder="Price" />
-    </div>
-    <div class="col-md-4">
-      <input id="purl" class="form-control" placeholder="Picture URL" />
-    </div>
-    <div class="col-md-3">
-      <select id="pcategory" class="form-select">
-        <option value="">Select Category</option>
-      </select>
-    </div>
-  </div>
+<input id="pname" placeholder="Product Name" />
+<input id="pprice" type="number" placeholder="Price" />
+<input id="purl" placeholder="Picture URL" />
+<select id="pcategory">
+  <option value="">Select Category</option>
+</select>
+<br />
+<button onclick="addProduct()">➕ Add</button>
+<button onclick="updateProduct()">✏️ Update</button>
+<button onclick="resetFields()">🔄 Reset</button>
+<button onclick="downloadDB()">💾 Download DB</button>
 
-  <div class="mt-3 text-center">
-    <button class="btn btn-custom me-2" onclick="addProduct()">➕ Add</button>
-    <button class="btn btn-custom me-2" onclick="updateProduct()">✏️ Update</button>
-    <button class="btn btn-custom me-2" onclick="resetFields()">🔄 Reset</button>
-    <button class="btn btn-custom" onclick="downloadDB()">💾 Download DB</button>
-  </div>
-
-  <div id="output" class="mt-4"></div>
-</div>
+<div id="output">Loading database...</div>
 
 <script>
   let db, SQL, selectedId = null;
@@ -131,7 +102,7 @@
     });
   };
 
-  initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
+  initSqlJs({ locateFile: file => https://sql.js.org/dist/${file} }).then(async SQLLib => {
     SQL = SQLLib;
     const response = await fetch("ecommerce.db");
     const buffer = await response.arrayBuffer();
@@ -152,7 +123,7 @@
     }
 
     try {
-      db.run(`INSERT INTO products (name, price, picture_url, category) VALUES (?, ?, ?, ?)`, [name, price, url, category]);
+      db.run(INSERT INTO products (name, price, picture_url, category) VALUES (?, ?, ?, ?), [name, price, url, category]);
       alert("✅ Product added!");
       resetFields();
       showProducts();
@@ -173,7 +144,7 @@
     const category = document.getElementById('pcategory').value;
 
     try {
-      db.run(`UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?`,
+      db.run(UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?,
              [name, price, url, category, selectedId]);
       alert("✅ Product updated!");
       resetFields();
@@ -186,7 +157,7 @@
   function deleteProduct(id) {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
-        db.run(`DELETE FROM products WHERE id = ?`, [id]);
+        db.run(DELETE FROM products WHERE id = ?, [id]);
         showProducts();
       } catch (e) {
         alert("❌ Error: " + e.message);
@@ -206,26 +177,26 @@
     const cols = res[0].columns;
     const rows = res[0].values;
 
-    let html = "<div class='table-responsive'><table class='table table-bordered text-white transparent-table'><thead><tr>";
-    cols.forEach(c => html += `<th>${c}</th>`);
-    html += "<th>Actions</th></tr></thead><tbody>";
+    let html = "<table><tr>";
+    cols.forEach(c => html += <th>${c}</th>);
+    html += "<th>Actions</th></tr>";
 
     rows.forEach(r => {
       html += "<tr>";
-      r.forEach(val => html += `<td>${val}</td>`);
-      html += `<td class="actions">
-                 <button class="btn btn-sm btn-custom" onclick="selectProduct(${r[0]})">✏️</button>
-                 <button class="btn btn-sm btn-custom" onclick="deleteProduct(${r[0]})">🗑️</button>
-               </td>`;
+      r.forEach(val => html += <td>${val}</td>);
+      html += <td class="actions">
+                 <button onclick="selectProduct(${r[0]})">✏️</button>
+                 <button onclick="deleteProduct(${r[0]})">🗑️</button>
+               </td>;
       html += "</tr>";
     });
 
-    html += "</tbody></table></div>";
+    html += "</table>";
     output.innerHTML = html;
   }
 
   function selectProduct(id) {
-    const res = db.exec(`SELECT * FROM products WHERE id = ${id}`);
+    const res = db.exec(SELECT * FROM products WHERE id = ${id});
     if (res.length) {
       const row = res[0].values[0];
       selectedId = row[0];
