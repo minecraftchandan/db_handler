@@ -22,7 +22,7 @@ h2 {
   text-shadow: 0 0 8px white;
 }
 
-input, select, button {
+input, select {
   padding: 12px 15px;
   margin: 8px 5px 12px 0;
   font-size: 15px;
@@ -45,17 +45,26 @@ input:focus, select:focus {
   box-shadow: 0 0 12px #ffffff;
 }
 
+/* ✅ Updated Button Styling */
 button {
-  background: rgba(90, 69, 242, 0.7);
+  background-color: #111;
   color: white;
-  font-weight: 600;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 0px rgba(255, 255, 255, 0.2);
+  text-align: center;
+  display: inline-block;
   text-shadow: 0 0 5px white;
 }
 
 button:hover:not(:disabled) {
-  background: #7b61ff;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+  background-color: #1a1a1a;
 }
 
 button:disabled {
@@ -95,18 +104,21 @@ td {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
 }
 
+/* ✅ Button inside action column */
 .actions button {
-  background: rgba(62, 62, 102, 0.8);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-  padding: 6px 10px;
-  border-radius: 8px;
+  background-color: #222;
   font-size: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+  margin: 2px;
 }
 
 .actions button:hover {
-  background: #7b61ff;
+  background-color: #1a1a1a;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
   color: #fff;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
 }
 
 #output {
@@ -116,6 +128,7 @@ td {
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
+
 </style>
 </head>
 <body>
