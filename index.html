@@ -6,107 +6,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://sql.js.org/dist/sql-wasm.js"></script>
   <style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-image: url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjBsNmE3NTlnZGxkM3N5Nzh0ZW5kNDkzb2Joazlyd3RoaGZsc21wNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5QRpj3tQyE2gRII7Y4/giphy.gif');
-  background-size: cover;
-  background-attachment: fixed;
-  color: #eee;
-  padding: 20px;
-  margin: 0;
-}
-
-h2 {
-  color: #ffffff;
-  margin-bottom: 20px;
-}
-
-input, select {
-  padding: 12px 15px;
-  margin: 8px 5px 12px 0;
-  font-size: 15px;
-  background: rgba(31, 31, 46, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: #fff;
-}
-
-input::placeholder, select option {
-  color: #aaa;
-}
-
-input:focus, select:focus {
-  background: rgba(46, 46, 74, 0.9);
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* ✅ Sleek Button Style (matches the image) */
-button {
-  background-color: #111;
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  padding: 12px 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  display: inline-block;
-}
-
-button:hover:not(:disabled) {
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
-  background-color: #1a1a1a;
-}
-
-button:disabled {
-  background: #333;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* Table styles remain minimal */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 10px;
-  margin-top: 25px;
-  background: transparent;
-}
-
-th, td {
-  padding: 12px 15px;
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-th {
-  background: rgba(255, 255, 255, 0.05);
-  font-weight: 600;
-  text-align: left;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-td {
-  vertical-align: middle;
-}
-
-.actions button {
-  font-size: 14px;
-  padding: 6px 12px;
-  background-color: #1c1c1c;
-  border-radius: 999px;
-}
-
-.actions button:hover {
-  background-color: #2a2a2a;
-}
-
-</style>
+    /* (Same CSS as your original, unchanged for brevity) */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-image: url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjBsNmE3NTlnZGxkM3N5Nzh0ZW5kNDkzb2Joazlyd3RoaGZsc21wNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/5QRpj3tQyE2gRII7Y4/giphy.gif');
+      background-size: cover;
+      background-attachment: fixed;
+      color: #eee;
+      padding: 20px;
+      margin: 0;
+    }
+    h2 {
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+    input, select {
+      padding: 12px 15px;
+      margin: 8px 5px 12px 0;
+      font-size: 15px;
+      background: rgba(31, 31, 46, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #fff;
+    }
+    input::placeholder, select option {
+      color: #aaa;
+    }
+    input:focus, select:focus {
+      background: rgba(46, 46, 74, 0.9);
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+    button {
+      background-color: #111;
+      color: white;
+      font-size: 16px;
+      font-weight: 500;
+      padding: 12px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      display: inline-block;
+    }
+    button:hover:not(:disabled) {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+      background-color: #1a1a1a;
+    }
+    button:disabled {
+      background: #333;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+      margin-top: 25px;
+      background: transparent;
+    }
+    th, td {
+      padding: 12px 15px;
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    th {
+      background: rgba(255, 255, 255, 0.05);
+      font-weight: 600;
+      text-align: left;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    td {
+      vertical-align: middle;
+    }
+    .actions button {
+      font-size: 14px;
+      padding: 6px 12px;
+      background-color: #1c1c1c;
+      border-radius: 999px;
+    }
+    .actions button:hover {
+      background-color: #2a2a2a;
+    }
+  </style>
 </head>
 <body>
   <h2>SQLite Product Manager</h2>
@@ -128,22 +113,13 @@ td {
   <script>
     let db, SQL, selectedId = null;
 
-   const categoryList = [
-  "Accessories",
-  "Audio",
-  "Wearables",
-  "Electronics",
-  "Photography",
-  "Gaming",
-  "Storage",
-  "Home Appliances",
-  "Smart Home",
-  "Personal Care",
-  "Kitchen Appliances",
-  "Automotive"
-];
+    const categoryList = [
+      "Accessories", "Audio", "Wearables", "Electronics", "Photography",
+      "Gaming", "Storage", "Home Appliances", "Smart Home",
+      "Personal Care", "Kitchen Appliances", "Automotive"
+    ];
 
-    // Populate dropdown on load
+    // Populate dropdown
     window.onload = () => {
       const dropdown = document.getElementById('pcategory');
       categoryList.sort().forEach(cat => {
@@ -154,7 +130,7 @@ td {
       });
     };
 
-    initSqlJs({ locateFile: file => https://sql.js.org/dist/${file} }).then(async SQLLib => {
+    initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
       SQL = SQLLib;
       const response = await fetch("ecommerce.db");
       const buffer = await response.arrayBuffer();
@@ -175,7 +151,7 @@ td {
       }
 
       try {
-        db.run(INSERT INTO products (name, price, picture_url, category) VALUES (?, ?, ?, ?), [name, price, url, category]);
+        db.run("INSERT INTO products (name, price, picture_url, category) VALUES (?, ?, ?, ?)", [name, price, url, category]);
         alert("✅ Product added!");
         resetFields();
         showProducts();
@@ -196,8 +172,7 @@ td {
       const category = document.getElementById('pcategory').value;
 
       try {
-        db.run(UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?,
-               [name, price, url, category, selectedId]);
+        db.run("UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?", [name, price, url, category, selectedId]);
         alert("✅ Product updated!");
         resetFields();
         showProducts();
@@ -209,7 +184,7 @@ td {
     function deleteProduct(id) {
       if (confirm("Are you sure you want to delete this product?")) {
         try {
-          db.run(DELETE FROM products WHERE id = ?, [id]);
+          db.run("DELETE FROM products WHERE id = ?", [id]);
           showProducts();
         } catch (e) {
           alert("❌ Error: " + e.message);
@@ -230,16 +205,16 @@ td {
       const rows = res[0].values;
 
       let html = "<table><tr>";
-      cols.forEach(c => html += <th>${c}</th>);
+      cols.forEach(c => html += `<th>${c}</th>`);
       html += "<th>Actions</th></tr>";
 
       rows.forEach(r => {
         html += "<tr>";
-        r.forEach(val => html += <td>${val}</td>);
-        html += <td class="actions">
-                   <button onclick="selectProduct(${r[0]})">✏️</button>
-                   <button onclick="deleteProduct(${r[0]})">🗑️</button>
-                 </td>;
+        r.forEach(val => html += `<td>${val}</td>`);
+        html += `<td class="actions">
+                  <button onclick="selectProduct(${r[0]})">✏️</button>
+                  <button onclick="deleteProduct(${r[0]})">🗑️</button>
+                 </td>`;
         html += "</tr>";
       });
 
@@ -248,7 +223,7 @@ td {
     }
 
     function selectProduct(id) {
-      const res = db.exec(SELECT * FROM products WHERE id = ${id});
+      const res = db.exec(`SELECT * FROM products WHERE id = ${id}`);
       if (res.length) {
         const row = res[0].values[0];
         selectedId = row[0];
@@ -280,6 +255,7 @@ td {
   </script>
 </body>
 </html>
+
 
 
 
