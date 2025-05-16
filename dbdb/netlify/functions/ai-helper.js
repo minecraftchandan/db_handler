@@ -8,7 +8,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: "Missing imageUrl" };
     }
 
-    const openaiKey = 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;
+    const openaiKey = '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';
     const prompt = `Look at this product image and respond ONLY with a JSON object like this: { "name": "...", "category": "..." }`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
