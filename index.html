@@ -1,209 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Product Manager</title>
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
-  input, select { padding: 6px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-  label { margin-top: 10px; display: block; font-weight: bold; }
-  button { margin-top: 10px; padding: 10px 20px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-  img { max-width: 80px; max-height: 50px; }
-  .action-btn { cursor: pointer; color: red; font-weight: bold; }
-</style>
+  <meta charset="UTF-8" />
+  <title>SQLite Product Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://sql.js.org/dist/sql-wasm.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 14px;
+    }
+    input, select {
+      width: 250px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background-color: #eee;
+    }
+    .actions button {
+      margin: 0 5px;
+    }
+  </style>
 </head>
 <body>
+  <h2>SQLite Product Manager</h2>
 
-<h2>Product Manager</h2>
-
-<form id="productForm">
-  <input type="hidden" id="productId" value="" />
-
-  <label for="name">Product Name</label>
-  <input type="text" id="name" required />
-
-  <label for="price">Price (10-600)</label>
-  <input type="number" id="price" min="10" max="600" required />
-
-  <label for="pictureUrl">Picture URL</label>
-  <input type="url" id="pictureUrl" required />
-
-  <label for="category">Category</label>
-  <select id="category" required>
-    <option value="">-- Select Category --</option>
-    <option>Audio</option>
-    <option>Wearables</option>
-    <option>Electronics</option>
-    <option>Photography</option>
-    <option>Gaming</option>
-    <option>Accessories</option>
-    <option>Storage</option>
-    <option>Home Appliances</option>
-    <option>Smart Home</option>
-    <option>Personal Care</option>
-    <option>Kitchen Appliances</option>
-    <option>Automotive</option>
+  <input id="pname" placeholder="Product Name" />
+  <input id="pprice" type="number" placeholder="Price" />
+  <input id="purl" placeholder="Picture URL" />
+  <select id="pcategory">
+    <option value="">Select Category</option>
   </select>
+  <br />
+  <button onclick="addProduct()">➕ Add</button>
+  <button onclick="updateProduct()">✏️ Update</button>
+  <button onclick="resetFields()">🔄 Reset</button>
+  <button onclick="downloadDB()">💾 Download DB</button>
 
-  <button type="submit" id="addBtn">Add</button>
-  <button type="button" id="updateBtn" disabled>Update</button>
-</form>
+  <div id="output">Loading database...</div>
 
-<button id="loadBtn" style="margin-top: 20px;">Load Products</button>
+  <script>
+    let db, SQL, selectedId = null;
 
-<table id="productTable" style="display:none;">
-  <thead>
-    <tr>
-      <th>Id</th>
-      <th>Name</th>
-      <th>Price</th>
-      <th>Picture</th>
-      <th>Category</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+    const categoryList = [
+      "Audio", "Smartwatch", "Wearables", "Tablet", "Electronics", "TV", "Camera",
+      "Photography", "Gaming", "Accessories", "Storage", "Home Appliances",
+      "Smart Home", "Personal Care", "Kitchen Appliances", "Automotive"
+    ];
 
-<script>
-  let products = [];
-  let currentId = 1;
+    // Populate dropdown on load
+    window.onload = () => {
+      const dropdown = document.getElementById('pcategory');
+      categoryList.sort().forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        dropdown.appendChild(option);
+      });
+    };
 
-  const form = document.getElementById('productForm');
-  const productIdInput = document.getElementById('productId');
-  const nameInput = document.getElementById('name');
-  const priceInput = document.getElementById('price');
-  const pictureUrlInput = document.getElementById('pictureUrl');
-  const categorySelect = document.getElementById('category');
-  const addBtn = document.getElementById('addBtn');
-  const updateBtn = document.getElementById('updateBtn');
-  const loadBtn = document.getElementById('loadBtn');
-  const table = document.getElementById('productTable');
-  const tableBody = table.querySelector('tbody');
-
-  function renderTable() {
-    tableBody.innerHTML = '';
-    if (products.length === 0) {
-      table.style.display = 'none';
-      return;
-    }
-    table.style.display = 'table';
-    products.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${p.id}</td>
-        <td>${p.name}</td>
-        <td>$${p.price}</td>
-        <td><img src="${p.pictureUrl}" alt="${p.name}" /></td>
-        <td>${p.category}</td>
-        <td>
-          <button class="editBtn" data-id="${p.id}">Edit</button>
-          <button class="deleteBtn" data-id="${p.id}">❌</button>
-        </td>
-      `;
-      tableBody.appendChild(tr);
+    initSqlJs({ locateFile: file => `https://sql.js.org/dist/${file}` }).then(async SQLLib => {
+      SQL = SQLLib;
+      const response = await fetch("ecommerce.db");
+      const buffer = await response.arrayBuffer();
+      db = new SQL.Database(new Uint8Array(buffer));
+      document.getElementById('output').textContent = "✅ DB Loaded";
+      showProducts();
     });
-    addEditDeleteListeners();
-  }
 
-  function addEditDeleteListeners() {
-    document.querySelectorAll('.editBtn').forEach(btn => {
-      btn.onclick = () => {
-        const id = parseInt(btn.getAttribute('data-id'));
-        const product = products.find(p => p.id === id);
-        if (product) {
-          productIdInput.value = product.id;
-          nameInput.value = product.name;
-          priceInput.value = product.price;
-          pictureUrlInput.value = product.pictureUrl;
-          categorySelect.value = product.category;
-          addBtn.disabled = true;
-          updateBtn.disabled = false;
+    function addProduct() {
+      const name = document.getElementById('pname').value.trim();
+      const price = parseFloat(document.getElementById('pprice').value);
+      const url = document.getElementById('purl').value.trim();
+      const category = document.getElementById('pcategory').value;
+
+      if (!name || !price || !url || !category) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      try {
+        db.run(`INSERT INTO products (name, price, picture_url, category) VALUES (?, ?, ?, ?)`, [name, price, url, category]);
+        alert("✅ Product added!");
+        resetFields();
+        showProducts();
+      } catch (e) {
+        alert("❌ Error: " + e.message);
+      }
+    }
+
+    function updateProduct() {
+      if (!selectedId) {
+        alert("Select a product to update.");
+        return;
+      }
+
+      const name = document.getElementById('pname').value.trim();
+      const price = parseFloat(document.getElementById('pprice').value);
+      const url = document.getElementById('purl').value.trim();
+      const category = document.getElementById('pcategory').value;
+
+      try {
+        db.run(`UPDATE products SET name=?, price=?, picture_url=?, category=? WHERE id=?`,
+               [name, price, url, category, selectedId]);
+        alert("✅ Product updated!");
+        resetFields();
+        showProducts();
+      } catch (e) {
+        alert("❌ Error: " + e.message);
+      }
+    }
+
+    function deleteProduct(id) {
+      if (confirm("Are you sure you want to delete this product?")) {
+        try {
+          db.run(`DELETE FROM products WHERE id = ?`, [id]);
+          showProducts();
+        } catch (e) {
+          alert("❌ Error: " + e.message);
         }
-      };
-    });
-
-    document.querySelectorAll('.deleteBtn').forEach(btn => {
-      btn.onclick = () => {
-        const id = parseInt(btn.getAttribute('data-id'));
-        products = products.filter(p => p.id !== id);
-        if (productIdInput.value == id) {
-          resetForm();
-        }
-        renderTable();
-      };
-    });
-  }
-
-  function resetForm() {
-    productIdInput.value = '';
-    nameInput.value = '';
-    priceInput.value = '';
-    pictureUrlInput.value = '';
-    categorySelect.value = '';
-    addBtn.disabled = false;
-    updateBtn.disabled = true;
-  }
-
-  form.onsubmit = e => {
-    e.preventDefault();
-
-    const name = nameInput.value.trim();
-    const price = parseFloat(priceInput.value);
-    const pictureUrl = pictureUrlInput.value.trim();
-    const category = categorySelect.value;
-
-    if (!name || !category || !pictureUrl || isNaN(price) || price < 10 || price > 600) {
-      alert('Please fill all fields correctly. Price must be between 10 and 600.');
-      return;
+      }
     }
 
-    // Add new product
-    products.push({
-      id: currentId++,
-      name,
-      price,
-      pictureUrl,
-      category,
-    });
+    function showProducts() {
+      const output = document.getElementById('output');
+      const res = db.exec("SELECT * FROM products");
 
-    resetForm();
-    alert('Product added! Click "Load Products" to see the list.');
-  };
+      if (!res.length) {
+        output.innerHTML = "No products found.";
+        return;
+      }
 
-  updateBtn.onclick = () => {
-    const id = parseInt(productIdInput.value);
-    const index = products.findIndex(p => p.id === id);
-    if (index === -1) {
-      alert('Product not found');
-      return;
+      const cols = res[0].columns;
+      const rows = res[0].values;
+
+      let html = "<table><tr>";
+      cols.forEach(c => html += `<th>${c}</th>`);
+      html += "<th>Actions</th></tr>";
+
+      rows.forEach(r => {
+        html += "<tr>";
+        r.forEach(val => html += `<td>${val}</td>`);
+        html += `<td class="actions">
+                   <button onclick="selectProduct(${r[0]})">✏️</button>
+                   <button onclick="deleteProduct(${r[0]})">🗑️</button>
+                 </td>`;
+        html += "</tr>";
+      });
+
+      html += "</table>";
+      output.innerHTML = html;
     }
 
-    const name = nameInput.value.trim();
-    const price = parseFloat(priceInput.value);
-    const pictureUrl = pictureUrlInput.value.trim();
-    const category = categorySelect.value;
-
-    if (!name || !category || !pictureUrl || isNaN(price) || price < 10 || price > 600) {
-      alert('Please fill all fields correctly. Price must be between 10 and 600.');
-      return;
+    function selectProduct(id) {
+      const res = db.exec(`SELECT * FROM products WHERE id = ${id}`);
+      if (res.length) {
+        const row = res[0].values[0];
+        selectedId = row[0];
+        document.getElementById('pname').value = row[1];
+        document.getElementById('pprice').value = row[2];
+        document.getElementById('purl').value = row[3];
+        document.getElementById('pcategory').value = row[4];
+      }
     }
 
-    products[index] = { id, name, price, pictureUrl, category };
-    resetForm();
-    alert('Product updated! Click "Load Products" to see the changes.');
-  };
+    function resetFields() {
+      selectedId = null;
+      document.getElementById('pname').value = "";
+      document.getElementById('pprice').value = "";
+      document.getElementById('purl').value = "";
+      document.getElementById('pcategory').value = "";
+    }
 
-  loadBtn.onclick = () => {
-    renderTable();
-  };
-
-</script>
-
+    function downloadDB() {
+      const binaryArray = db.export();
+      const blob = new Blob([binaryArray], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'modified.db';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
 </body>
 </html>
+
 
 
