@@ -4,7 +4,7 @@ exports.handler = async (event) => {
   try {
     const { imageUrl } = JSON.parse(event.body);
 
-    const openaiKey = process.env.OPENAI_API_KEY;
+    const openaiKey = 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;
     const prompt = `Look at this product image and respond with a JSON object: { "name": "...", "category": "..." }`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
