@@ -1,6 +1,7 @@
 [build]
-  functions = "dbdb/netlify/functions"
-  publish = "dbdb"
+  functions = "netlify/functions"
+  publish = "."
 
 [dev]
-  functions = "dbdb/netlify/functions"
+  functions = "netlify/functions"
+
